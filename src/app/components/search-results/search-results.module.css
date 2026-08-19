@@ -12,6 +12,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.5rem;
 }
 
 .search_param {
@@ -32,6 +33,7 @@
 .search_results_content {
   width: 100%;
   display: flex;
+  justify-content: space-between;
   gap: 1rem;
   margin: 0.625rem;
 }

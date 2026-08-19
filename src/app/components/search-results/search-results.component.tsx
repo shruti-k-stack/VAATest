@@ -30,8 +30,8 @@ export default function SearchResultsComponent({
           </p>
           {(location || departureDate) && (
             <>
-              <p className={styles.search_param}>Going to {location ? ` for ${location}` : ""}</p>
-              <p className={styles.search_param}>Departure {departureDate ? ` departing ${departureDate}` : ""}.</p>
+              <p className={styles.search_param}>Going to: {location ? `${location}` : ""}</p>
+              <p className={styles.search_param}>Departure: {departureDate ? `${departureDate}` : ""}.</p>
             </>
           )}
         </div>
