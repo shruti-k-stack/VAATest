@@ -1,0 +1,7 @@
+.search_results_component {
+  display: flex;
+  gap: 1rem;
+  background-color: #f9f9f9;
+  padding: unset;
+  margin: unset
+}
