@@ -1,7 +1,37 @@
 .search_results_component {
   display: flex;
+  justify-content: space-between;
   gap: 1rem;
-  background-color: #f9f9f9;
+  background-color: #e6e6e6;
   padding: unset;
-  margin: unset
+  margin: 0.625rem;
+}
+
+.search_results_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search_param {
+  font-size: 1rem;
+  color: #333;
+  margin: 0.5rem;
+}
+
+.edit_search_button {
+  background-color: #33549c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem;
+  cursor: pointer;
+}
+
+.search_results_content {
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  margin: 0.625rem;
 }

@@ -1,0 +1,56 @@
+.search_filter_menu {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.filter_hotel_name {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.filter_hotel_name > label {
+    font-weight: bold;
+}
+
+.filter_hotel_name_content {
+    display: flex;
+    font-weight: bold;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter_hotel_name_content > input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+} 
+
+.filter_hotel_name > button {
+    background-color: #33549c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+.filter_rating_content {
+    font-weight: bold;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.filter_star_rating {
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.filter_star_rating  > span {
+    font-weight: bold;
+    color: #333;
+    margin-right: 0.5rem;
+}
