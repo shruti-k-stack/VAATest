@@ -42,11 +42,9 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
         return hotelNameMatch && starRatingMatch && priceMatch;
     });
 
-    const sortHolidays = filteredHolidays[0].tierPoints;
-    
-    if(active === "recommended") {
-            filteredHolidays = filteredHolidays.filter((holiday) => (holiday.tierPoints > 40))
-        }
+    if (active === "recommended") {
+        filteredHolidays = filteredHolidays.filter((holiday) => holiday.tierPoints > 40);
+    }
 
     const prices = holidays.map((holiday) => holiday.pricePerPerson);
 
@@ -137,7 +135,7 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
                 </section>   
         </aside>
         <main className={styles.filter_holiday_results}>
-            {filteredHolidays.length > 0 && sortHolidays > 40 ? (
+            {active === "recommended" && filteredHolidays.length > 0 ? (
                 <div className={styles.filter_holiday_results}>
                     <HolidayCardRecommended holidays={filteredHolidays} departureDate={departureDate} />
                 </div>
