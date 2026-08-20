@@ -2,13 +2,19 @@
 
 import type { Holiday } from "@/types/booking";
 import styles from './holidaycards.module.css';
+import { JSX } from "react/jsx-runtime";
 
-export default function HolidayCards({ holidays, departureDate }: { holidays: Holiday[]; departureDate: string | undefined }) {
+type HolidayCardsProps = {
+  holidays: Holiday[];
+  departureDate: string | undefined;
+};
+
+export default function HolidayCards({ holidays, departureDate }: HolidayCardsProps) {
 
 
 if (holidays && holidays.length > 0) {
      return (
-         <div>
+         <div className={styles.holiday_card_container}>
           {holidays.map((holiday) => (
               <div className={styles.holiday_card} key={holiday.hotel.id}>
                 <div className={styles.holiday_card_content}>
@@ -36,4 +42,17 @@ if (holidays && holidays.length > 0) {
     else return (
       <h2>No Hotels Found.</h2>
     )
+};
+
+export const recommendedLabel = (Card: (props: HolidayCardsProps) => JSX.Element) => {
+  return (props: HolidayCardsProps) => {
+    return (
+      <section className={styles.recommended_container}>
+          <label className={styles.recommended_label}>
+            Recommended
+          </label>
+          <Card {...props} />
+      </section>
+    )
+  }
 }

@@ -1,3 +1,8 @@
+.holiday_card_container{
+    width: 100%;
+}
+
+
 .holiday_card {
     display: flex;
     gap: 0.625rem;
@@ -104,4 +109,19 @@
         font-size: 0.75rem;
         width: 100%;
     }
+}
+.recommended_container{
+    position: relative;
+}
+
+.recommended_label {
+    position: absolute;
+    top: 2;
+    left: 2;
+    background-color: #000;
+    color: #e6e6e6;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.875rem;
 }

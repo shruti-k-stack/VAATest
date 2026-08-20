@@ -5,12 +5,30 @@
 }
 
 .search_container {
+    width: 100%;
     display: flex;
     flex-direction: column;
 }
 
 .search_body {
     display: flex;
+}
+
+.sort_display {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: flex-end;
+    padding-right: 1.25rem;
+
+}
+
+
+.sort_buttons {
+    background-color: #33549c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
 }
 
 .filter_items {
@@ -52,7 +70,7 @@
     border-radius: 4px;
 } 
 
-.clear_filters_button {
+.filters_button {
     background-color: #33549c;
     color: white;
     border: none;

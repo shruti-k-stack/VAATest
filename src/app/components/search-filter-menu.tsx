@@ -5,14 +5,19 @@ import styles from './search-filter-menu.module.css';
 import { Holiday } from '@/types/booking';
 import { DATE_FORMATS } from '@/utils/constants';
 import { DateTime } from 'luxon';
-import HolidayCards from './holiday-cards';
-import SortingMenu from './sorting-menu';
+import HolidayCards, { recommendedLabel } from './holiday-cards';
 
+type SortType = "recommended" | "price" | "rating" | null;
+
+const HolidayCardRecommended = recommendedLabel(HolidayCards);
 
 export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) {
     const [searchHotelName, setSearchHotelName] = useState("");
     const [starRating, setStarRating] = useState("");
     const [selectedPriceRanges, setSelectedPriceRanges] = useState<number[]>([]);
+    const [active, setActive] = useState<SortType>(null);
+    const [sortItems, setSortItems] = useState<Holiday[]>([])
+
 
     const departureDate = DateTime.now().plus({ days: 7, months: 1 }).toFormat(DATE_FORMATS.URL_DATE);
 
@@ -29,33 +34,52 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
         setStarRating("");
     }
 
-    const filteredHolidays = holidays.filter((holiday) => {
+    
+    let filteredHolidays = holidays.filter((holiday) => {
         const hotelNameMatch = holiday.hotel.name.toLowerCase().includes(searchHotelName.toLowerCase());
         const starRatingMatch = starRating ? holiday.hotel.content.starRating.toString() === starRating : true;
-         return hotelNameMatch && starRatingMatch;
+        const priceMatch = selectedPriceRanges.length === 0 || selectedPriceRanges.includes(holiday.pricePerPerson); 
+        return hotelNameMatch && starRatingMatch && priceMatch;
     });
+
+    const sortHolidays = filteredHolidays[0].tierPoints;
+    
+    if(active === "recommended") {
+            filteredHolidays = filteredHolidays.filter((holiday) => (holiday.tierPoints > 40))
+        }
 
     const prices = holidays.map((holiday) => holiday.pricePerPerson);
 
-    const handlePriceRangeSet = (price: number) => {
-        {holidays.filter((holiday) => (selectedPriceRanges.length === 0 || selectedPriceRanges.includes(holiday.pricePerPerson)))}
-        if (selectedPriceRanges.includes(price)) {
-            setSelectedPriceRanges(selectedPriceRanges.filter((p) => p !== price));
-        } else {
-            setSelectedPriceRanges([...selectedPriceRanges, price]);
-        }
+    const handlePriceSort = () => {
+        const sorted = [...filteredHolidays].sort((x, y) => x.pricePerPerson - y.pricePerPerson);
+        setSortItems(sorted);
     }
+
+    // const handlePriceRangeSet = (price: number) => {
+    //     {holidays.filter((holiday) => (selectedPriceRanges.length === 0 || selectedPriceRanges.includes(holiday.pricePerPerson)))}
+    //     if (selectedPriceRanges.includes(price)) {
+    //         setSelectedPriceRanges(selectedPriceRanges.filter((p) => p !== price));
+    //     } else {
+    //         setSelectedPriceRanges([...selectedPriceRanges, price]);
+    //     }
+    // }
 
     return(
         <>
         <section className={styles.search_container}>
-        <SortingMenu holiday={holidays}/>
+        <div className={styles.sort_display}>
+            <button type="button" className={styles.sort_buttons} onClick={() => setActive(active === "recommended" ? null : "recommended")}>Recommended </button>
+
+            <button type="button" className={styles.sort_buttons} onClick={handlePriceSort}>Price</button>
+
+            <button type="button" className={styles.sort_buttons}>Rating</button>
+        </div>
         <section className={styles.search_body}>
         <aside className={styles.search_filter_menu} aria-labelledby="filter-menu">
                 <section className={styles.filter_items}>
                     <div className={styles.filter_header}>
                         <h3 id="filter-menu">Filter By</h3>
-                        <button type="reset" className={styles.clear_filters_button} onClick={handleReset}> Reset </button>
+                        <button type="reset" className={styles.filters_button} onClick={handleReset}> Reset </button>
                     </div>
                     <section className={styles.filter_hotel_name}>
                         <div className={styles.filter_hotel_name_content}>
@@ -107,16 +131,20 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
                                             {price}
                                         </label>
                                     ))}
-                            <button type="reset" className={styles.clear_filters_button} onClick={() => {handlePriceRangeSet}}> Apply </button>
+                            {/* <button className={styles.filters_button} onClick={() => {handlePriceRangeSet}}> Apply </button> */}
                             
                         </section>
                 </section>   
         </aside>
         <main className={styles.filter_holiday_results}>
-            {(filteredHolidays) ? (
-                <HolidayCards holidays={filteredHolidays} departureDate={departureDate} />
+            {filteredHolidays.length > 0 && sortHolidays > 40 ? (
+                <div className={styles.filter_holiday_results}>
+                    <HolidayCardRecommended holidays={filteredHolidays} departureDate={departureDate} />
+                </div>
             ) : (
-                <p>No hotels found.</p>
+                <div className={styles.filter_holiday_results}>
+                    <HolidayCards holidays={filteredHolidays} departureDate={departureDate} />
+                </div>
             )}
         </main>
         </section>
