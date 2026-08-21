@@ -3,6 +3,7 @@
 import type { Holiday } from "@/types/booking";
 import styles from './holidaycards.module.css';
 import { JSX } from "react/jsx-runtime";
+import { index } from "parsimmon";
 
 type HolidayCardsProps = {
   holidays: Holiday[];
@@ -11,15 +12,28 @@ type HolidayCardsProps = {
 
 export default function HolidayCards({ holidays, departureDate }: HolidayCardsProps) {
 
+  const uniqueHotels = Array.from(new Map(
+          holidays.map((holiday) => [holiday.hotel.id, holiday])
+        ).values()
+        );
 
 if (holidays && holidays.length > 0) {
      return (
          <div className={styles.holiday_card_container}>
-          {holidays.map((holiday) => (
-              <div className={styles.holiday_card} key={holiday.hotel.id}>
+          {holidays.map((holiday, index) => (
+              <div className={styles.holiday_card} key={`${holiday.hotel.id}-${index}`}>
                 <div className={styles.holiday_card_content}>
                     <div className={styles.holiday_card_image}>
-                      <img src={holiday.hotel.content.images[0]?.RESULTS_CAROUSEL.url} alt={holiday.hotel.name} />
+                      {holiday.hotel.content.images[0]?.RESULTS_CAROUSEL.url ? (
+                              <img
+                                src={holiday.hotel.content.images[0]?.RESULTS_CAROUSEL?.url}
+                                alt={holiday.hotel.name}
+                              />
+                            ) : (
+                              <div className={styles.image_placeholder}>
+                                No image available
+                              </div>
+                            )}
                     </div>
                     <div className={styles.holiday_card_body}>
                     <div className={styles.holiday_card_details}>

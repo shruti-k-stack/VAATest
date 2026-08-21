@@ -32,7 +32,8 @@
 }
 
 .holiday_card_body {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
     gap: 0.625rem;
     justify-content: space-between;
     font-size: 1.25rem;
