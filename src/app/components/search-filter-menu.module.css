@@ -1,5 +1,4 @@
 .search_filter_menu {
-    display: flex;
     padding: 1rem;
 }
 
@@ -96,6 +95,7 @@
     flex-direction: column;
     gap: 0.5rem;
     font-weight: bold;
+    margin-bottom: unset;
 }
 
 .filter_holiday_results {
