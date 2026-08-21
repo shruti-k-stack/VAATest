@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import styles from './search-filter-menu.module.css';
 import { Holiday } from '@/types/booking';
 import { DATE_FORMATS } from '@/utils/constants';
@@ -21,8 +21,12 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
     const [searchHotelName, setSearchHotelName] = useState("");
     const [starRating, setStarRating] = useState("");
     const [active, setActive] = useState<SortType>(null);
+
     const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
     const [appliedPriceRanges, setAppliedPriceRanges] = useState<string[]>([]);
+
+    const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
+    const [appliedSelectedFacilities, setAppliedSelectedFacilities] = useState<string[]>([]);
 
 
     const departureDate = DateTime.now().plus({ days: 7, months: 1 }).toFormat(DATE_FORMATS.URL_DATE);
@@ -47,6 +51,17 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
         setAppliedPriceRanges(selectedPriceRanges);
     }
 
+    const handleApplyFacilities = () => {
+        setAppliedSelectedFacilities(selectedFacilities);
+    }
+
+    const availableFacilities = useMemo(() => {
+        const allFacilities = holidays.flatMap(
+            (holiday) => holiday.hotel.content.hotelFacilities || []
+        );
+        return Array.from(new Set(allFacilities)).sort();
+    }, [holidays]);
+
     
     let filteredHolidays = holidays.filter((holiday) => {
         const hotelNameMatch = holiday.hotel.name.toLowerCase().includes(searchHotelName.toLowerCase());
@@ -56,8 +71,11 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
             if (!range) return false;
 
             return holiday.pricePerPerson >= range.min && holiday.pricePerPerson <= range.max;
-        }); 
-        return hotelNameMatch && starRatingMatch && priceMatch;
+        });
+        const facilitiesMatch = appliedSelectedFacilities.length === 0 || appliedSelectedFacilities.every((facility) => {
+            return holiday.hotel.content.hotelFacilities?.includes(facility);
+        });
+        return hotelNameMatch && starRatingMatch && priceMatch && facilitiesMatch;
     });
 
     if (active === "recommended") {
@@ -107,11 +125,12 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
                                 <option value="1">1 Star</option>
                             </select>
                     </section>
+                    <section style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                         <section className={styles.filter_price_range}>
                                 <label htmlFor="price-range">Price Range</label>
 
                                     {PRICE_RANGES.map((price) => (
-                                        <label key={price.id}>
+                                        <label key={price.id} style={{ fontSize: '1.25rem', fontWeight: 'normal'}}>
                                             <input
                                                 type="checkbox"
                                                 value={price.id}
@@ -136,7 +155,30 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
                                         </label>
                                     ))}
                             <button className={styles.filters_button} onClick={handleApplyPrices}> Apply </button>
+                        </section>
+
+                        <section className={styles.filter_price_range}>
+                            <label htmlFor="hotel-facilities">Hotel Facilities</label>
+                            {availableFacilities.map((facility) => (
+                                <label key={facility} style={{ fontSize: '1.25rem', fontWeight: 'normal'}}>
+                                    <input 
+                                    type='checkbox' 
+                                    value={facility} 
+                                    checked={selectedFacilities.includes(facility)}
+                                    onChange={(e) => {
+                                        if(e.target.checked) {
+                                            setSelectedFacilities([...selectedFacilities, facility])
+                                        } else {
+                                            setSelectedFacilities(selectedFacilities.filter((f)=> f !== facility))
+                                        }
+                                    }}
+                                    />
+                                    {facility}
+                                </label>
+                            ))}
                             
+                            <button className={styles.filters_button} onClick={handleApplyFacilities}> Apply </button>
+                            </section>
                         </section>
                 </section>   
         </aside>
