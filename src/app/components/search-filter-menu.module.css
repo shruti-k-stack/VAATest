@@ -1,7 +1,6 @@
 .search_filter_menu {
     display: flex;
     padding: 1rem;
-    gap: 1rem;
 }
 
 .search_container {
@@ -45,23 +44,16 @@
     align-items: center;
 }
 
-.filter_hotel_name {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
 .filter_hotel_name > label {
     font-weight: bold;
 }
 
 .filter_hotel_name_content {
     display: flex;
-    align-items: flex-start;
-    justify-content: start;
+    flex-direction: column;
     font-weight: bold;
-    align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 .filter_hotel_name_content > input {
@@ -82,11 +74,13 @@
     font-weight: bold;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 .filter_star_rating {
-    padding: 1rem;
+    padding: 0.5rem;
+    color: #5f5e5e;
     border: 1px solid #ccc;
     border-radius: 4px;
 }

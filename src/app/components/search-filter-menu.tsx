@@ -11,12 +11,18 @@ type SortType = "recommended" | "price" | "rating" | null;
 
 const HolidayCardRecommended = recommendedLabel(HolidayCards);
 
+const PRICE_RANGES = [
+    { id: 'low', label: 'Under 500', min: 0, max: 499.99 },
+    { id: 'mid', label: '500 - 1000', min: 500, max: 1000 },
+    { id: 'high', label: 'Over 1000', min: 1000.01, max: Infinity },
+];
+
 export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) {
     const [searchHotelName, setSearchHotelName] = useState("");
     const [starRating, setStarRating] = useState("");
-    const [selectedPriceRanges, setSelectedPriceRanges] = useState<number[]>([]);
     const [active, setActive] = useState<SortType>(null);
-    const [sortItems, setSortItems] = useState<Holiday[]>([])
+    const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
+    const [appliedPriceRanges, setAppliedPriceRanges] = useState<string[]>([]);
 
 
     const departureDate = DateTime.now().plus({ days: 7, months: 1 }).toFormat(DATE_FORMATS.URL_DATE);
@@ -32,35 +38,35 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
     const handleReset = () => {
         setSearchHotelName("");
         setStarRating("");
+        setActive(null);
+        setSelectedPriceRanges([]);
+        setAppliedPriceRanges([]);
+    }
+
+    const handleApplyPrices = () => {
+        setAppliedPriceRanges(selectedPriceRanges);
     }
 
     
     let filteredHolidays = holidays.filter((holiday) => {
         const hotelNameMatch = holiday.hotel.name.toLowerCase().includes(searchHotelName.toLowerCase());
         const starRatingMatch = starRating ? holiday.hotel.content.starRating.toString() === starRating : true;
-        const priceMatch = selectedPriceRanges.length === 0 || selectedPriceRanges.includes(holiday.pricePerPerson); 
+        const priceMatch = appliedPriceRanges.length === 0 || appliedPriceRanges.some((rangeId) => {
+            const range = PRICE_RANGES.find((r) => r.id === rangeId);
+            if (!range) return false;
+
+            return holiday.pricePerPerson >= range.min && holiday.pricePerPerson <= range.max;
+        }); 
         return hotelNameMatch && starRatingMatch && priceMatch;
     });
 
     if (active === "recommended") {
         filteredHolidays = filteredHolidays.filter((holiday) => holiday.tierPoints > 40);
+    } else if (active === "price") {
+        filteredHolidays.sort((a, b) => a.pricePerPerson - b.pricePerPerson);
+    } else if (active === "rating") {
+        filteredHolidays.sort((a, b) => Number(b.hotel.content.starRating) - Number(a.hotel.content.starRating));
     }
-
-    const prices = holidays.map((holiday) => holiday.pricePerPerson);
-
-    const handlePriceSort = () => {
-        const sorted = [...filteredHolidays].sort((x, y) => x.pricePerPerson - y.pricePerPerson);
-        setSortItems(sorted);
-    }
-
-    // const handlePriceRangeSet = (price: number) => {
-    //     {holidays.filter((holiday) => (selectedPriceRanges.length === 0 || selectedPriceRanges.includes(holiday.pricePerPerson)))}
-    //     if (selectedPriceRanges.includes(price)) {
-    //         setSelectedPriceRanges(selectedPriceRanges.filter((p) => p !== price));
-    //     } else {
-    //         setSelectedPriceRanges([...selectedPriceRanges, price]);
-    //     }
-    // }
 
     return(
         <>
@@ -68,11 +74,11 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
         <div className={styles.sort_display}>
             <button type="button" className={styles.sort_buttons} onClick={() => setActive(active === "recommended" ? null : "recommended")}>Recommended </button>
 
-            <button type="button" className={styles.sort_buttons} onClick={handlePriceSort}>Price</button>
+            <button type="button" className={styles.sort_buttons} onClick={() => setActive(active === "price" ? null : "price")}>Price</button>
 
-            <button type="button" className={styles.sort_buttons}>Rating</button>
+            <button type="button" className={styles.sort_buttons} onClick={() => setActive(active === "rating" ? null : "rating")}>Rating</button>
         </div>
-        <section className={styles.search_body}>
+        <div className={styles.search_body}>
         <aside className={styles.search_filter_menu} aria-labelledby="filter-menu">
                 <section className={styles.filter_items}>
                     <div className={styles.filter_header}>
@@ -104,32 +110,32 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
                         <section className={styles.filter_price_range}>
                                 <label htmlFor="price-range">Price Range</label>
 
-                                    {prices.map((price) => (
-                                        <label key={price}>
+                                    {PRICE_RANGES.map((price) => (
+                                        <label key={price.id}>
                                             <input
                                                 type="checkbox"
-                                                value={price}
-                                                checked={selectedPriceRanges.includes(price)}
+                                                value={price.id}
+                                                checked={selectedPriceRanges.includes(price.id)}
                                                 onChange={(e) => {
                                                     if (e.target.checked) {
                                                         setSelectedPriceRanges([
                                                             ...selectedPriceRanges,
-                                                            price,
+                                                            price.id,
                                                         ]);
                                                     } else {
                                                         setSelectedPriceRanges(
                                                             selectedPriceRanges.filter(
-                                                                (p) => price !== p
+                                                                (p) => p !== price.id
                                                             )
                                                         );
                                                     }
                                                 }}
                                             />
 
-                                            {price}
+                                            {price.label}
                                         </label>
                                     ))}
-                            {/* <button className={styles.filters_button} onClick={() => {handlePriceRangeSet}}> Apply </button> */}
+                            <button className={styles.filters_button} onClick={handleApplyPrices}> Apply </button>
                             
                         </section>
                 </section>   
@@ -145,7 +151,7 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
                 </div>
             )}
         </main>
-        </section>
+        </div>
         </section> 
         </>    
     )
