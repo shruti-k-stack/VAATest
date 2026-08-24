@@ -5,6 +5,7 @@
 
 .holiday_card {
     display: flex;
+    flex-direction: column;
     gap: 0.625rem;
     justify-content: space-between;
     border: 1px solid #ccc;

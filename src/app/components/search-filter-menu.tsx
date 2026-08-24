@@ -6,6 +6,7 @@ import { Holiday } from '@/types/booking';
 import { DATE_FORMATS } from '@/utils/constants';
 import { DateTime } from 'luxon';
 import HolidayCards, { recommendedLabel } from './holiday-cards';
+import { toTitleCase } from './utils/constants';
 
 type SortType = "recommended" | "price" | "rating" | null;
 
@@ -32,13 +33,6 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
 
     const departureDate = DateTime.now().plus({ days: 7, months: 1 }).toFormat(DATE_FORMATS.URL_DATE);
     
-    const toTitleCase = (str: string): string => {
-        return str
-        .toLowerCase()
-        .split(' ')
-        .map((word: string): string => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    }
     
     const availableFacilities = useMemo(() => {
     const allFacilities = holidays.flatMap(

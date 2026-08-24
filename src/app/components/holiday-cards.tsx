@@ -4,6 +4,7 @@ import type { Holiday } from "@/types/booking";
 import styles from './holidaycards.module.css';
 import { JSX } from "react/jsx-runtime";
 import FallbackImage from "./fallback-image";
+import { toTitleCase, truncateText } from "./utils/constants";
 
 type HolidayCardsProps = {
   holidays: Holiday[];
@@ -15,12 +16,6 @@ export default function HolidayCards({ holidays, departureDate }: HolidayCardsPr
   const uniqueHolidays = holidays.filter((holiday, index, self ) => {
       return index === self.findIndex((h) => h.hotel.id === holiday.hotel.id)
   })
-
-  const truncateText = (text: string, maxLength: number): string => {
-    if (!text) return "";
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + "...";
-};
 
 if (uniqueHolidays && uniqueHolidays.length > 0) {
      return (
@@ -38,14 +33,17 @@ if (uniqueHolidays && uniqueHolidays.length > 0) {
                     <div className={styles.holiday_card_body}>
                     <div className={styles.holiday_card_details}>
                         <h3 className={styles.holiday_hotel_name}>{truncateText(holiday.hotel.name, 30)}</h3>
-                        <p>Departure Date: {departureDate}</p>
-                        <p>Star Rating: {holiday.hotel.content.starRating}</p>
+                        <p>Departing: {departureDate}</p>
+                        <p>Rating: {holiday.hotel.content.starRating}</p>
                         <p>Location: {holiday.hotel.content.parentLocation}</p>
+                        <p>{holiday.hotel.boardBasis}</p>
+                        <p>{truncateText(holiday.hotel.content.hotelFacilities.map((facility) => toTitleCase(facility)).join(', '), 10)}</p>
                     </div>
                     <div className={styles.holiday_card_pricing}>
                       <h3>£{holiday.pricePerPerson}pp</h3>
                       <p>Total for 2 guests £{holiday.totalPrice}</p>
                     </div>
+                    <button style= {{backgroundColor: '#33549c', color: 'white', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer'}}>More Details</button>
                     </div>
                 </div>
               </div>
