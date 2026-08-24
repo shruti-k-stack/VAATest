@@ -16,6 +16,12 @@ export default function HolidayCards({ holidays, departureDate }: HolidayCardsPr
       return index === self.findIndex((h) => h.hotel.id === holiday.hotel.id)
   })
 
+  const truncateText = (text: string, maxLength: number): string => {
+    if (!text) return "";
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + "...";
+};
+
 if (uniqueHolidays && uniqueHolidays.length > 0) {
      return (
          <div className={styles.holiday_card_container}>
@@ -31,7 +37,7 @@ if (uniqueHolidays && uniqueHolidays.length > 0) {
                     </div>
                     <div className={styles.holiday_card_body}>
                     <div className={styles.holiday_card_details}>
-                        <h3>{holiday.hotel.name}</h3>
+                        <h3 className={styles.holiday_hotel_name}>{truncateText(holiday.hotel.name, 30)}</h3>
                         <p>Departure Date: {departureDate}</p>
                         <p>Star Rating: {holiday.hotel.content.starRating}</p>
                         <p>Location: {holiday.hotel.content.parentLocation}</p>
