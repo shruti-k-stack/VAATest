@@ -9,7 +9,8 @@ import HolidayCards, { recommendedLabel } from './holiday-cards';
 
 type SortType = "recommended" | "price" | "rating" | null;
 
-const HolidayCardRecommended = recommendedLabel(HolidayCards);
+const HolidayCardRecommended: React.ComponentType<React.ComponentProps<typeof HolidayCards>> =
+    recommendedLabel(HolidayCards);
 
 const PRICE_RANGES = [
     { id: 'low', label: 'Under 500', min: 0, max: 499.99 },
@@ -30,6 +31,23 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
 
 
     const departureDate = DateTime.now().plus({ days: 7, months: 1 }).toFormat(DATE_FORMATS.URL_DATE);
+    
+    const toTitleCase = (str: string): string => {
+        return str
+        .toLowerCase()
+        .split(' ')
+        .map((word: string): string => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    }
+    
+    const availableFacilities = useMemo(() => {
+    const allFacilities = holidays.flatMap(
+            (holiday) => holiday.hotel.content.hotelFacilities || []
+        );
+        const uniqueFacilities = new Set(allFacilities.map(f => f.toLowerCase()));
+            return Array.from(uniqueFacilities).sort();
+    }, [holidays]);
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchHotelName(e.target.value);
@@ -50,17 +68,11 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
     const handleApplyPrices = () => {
         setAppliedPriceRanges(selectedPriceRanges);
     }
-
+    
     const handleApplyFacilities = () => {
         setAppliedSelectedFacilities(selectedFacilities);
     }
-
-    const availableFacilities = useMemo(() => {
-        const allFacilities = holidays.flatMap(
-            (holiday) => holiday.hotel.content.hotelFacilities || []
-        );
-        return Array.from(new Set(allFacilities)).sort();
-    }, [holidays]);
+    
 
     
     let filteredHolidays = holidays.filter((holiday) => {
@@ -73,7 +85,9 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
             return holiday.pricePerPerson >= range.min && holiday.pricePerPerson <= range.max;
         });
         const facilitiesMatch = appliedSelectedFacilities.length === 0 || appliedSelectedFacilities.every((facility) => {
-            return holiday.hotel.content.hotelFacilities?.includes(facility);
+            return holiday.hotel.content.hotelFacilities?.some(
+                (hotelFacility) => hotelFacility.toLowerCase() === facility
+            );
         });
         return hotelNameMatch && starRatingMatch && priceMatch && facilitiesMatch;
     });
@@ -173,7 +187,7 @@ export default function SearchFilterMenu({ holidays }: { holidays: Holiday[] }) 
                                         }
                                     }}
                                     />
-                                    {facility}
+                                    {toTitleCase(facility)}
                                 </label>
                             ))}
                             
