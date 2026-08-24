@@ -12,10 +12,14 @@ type HolidayCardsProps = {
 
 export default function HolidayCards({ holidays, departureDate }: HolidayCardsProps) {
 
-if (holidays && holidays.length > 0) {
+  const uniqueHolidays = holidays.filter((holiday, index, self ) => {
+      return index === self.findIndex((h) => h.hotel.id === holiday.hotel.id)
+  })
+
+if (uniqueHolidays && uniqueHolidays.length > 0) {
      return (
          <div className={styles.holiday_card_container}>
-          {holidays.map((holiday, index) => (
+          {uniqueHolidays.map((holiday, index) => (
               <div className={styles.holiday_card} key={`${holiday.hotel.id}-${index}`}>
                 <div className={styles.holiday_card_content}>
                     <div className={styles.holiday_card_image}>
