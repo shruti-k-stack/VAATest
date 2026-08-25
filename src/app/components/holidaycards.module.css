@@ -15,7 +15,6 @@
 }
 
 .holiday_card_content {
-    width: 100%;
     display: flex;
     gap: 0.625rem;
     justify-content: space-between;
@@ -27,8 +26,6 @@
 
 .holiday_card_image {
     width: 70%;
-    height: 16rem;
-    margin-bottom: 0.625rem;
     padding: 0.625rem;
 }
 

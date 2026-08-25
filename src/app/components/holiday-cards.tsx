@@ -1,9 +1,9 @@
 "use client";
 
 import type { Holiday } from "@/types/booking";
+import { useState } from "react";
 import styles from './holidaycards.module.css';
 import { JSX } from "react/jsx-runtime";
-import FallbackImage from "./fallback-image";
 import { toTitleCase, truncateText } from "./utils/constants";
 
 type HolidayCardsProps = {
@@ -12,6 +12,13 @@ type HolidayCardsProps = {
 };
 
 export default function HolidayCards({ holidays, departureDate }: HolidayCardsProps) {
+
+  const imgUrl = holidays[0]?.hotel.content.images[0]?.RESULTS_CAROUSEL?.url;
+
+   const [imgSrc, setImgSrc] = useState(imgUrl);
+  
+    const fallbackSrc = '/images/hotel.jpg';
+  
 
   const uniqueHolidays = holidays.filter((holiday, index, self ) => {
       return index === self.findIndex((h) => h.hotel.id === holiday.hotel.id)
@@ -24,11 +31,12 @@ if (uniqueHolidays && uniqueHolidays.length > 0) {
               <div className={styles.holiday_card} key={`${holiday.hotel.id}-${index}`}>
                 <div className={styles.holiday_card_content}>
                     <div className={styles.holiday_card_image}>
-                        <FallbackImage 
-                        src={holiday.hotel.content.images[0]?.RESULTS_CAROUSEL?.url} 
-                        alt={holiday.hotel.name}
-                        placeholderClass={styles.image_placeholder}
-                      />
+                        <img src={imgSrc}
+                          alt= {holiday.hotel.name}
+                          onError={() => setImgSrc(fallbackSrc)}
+                          width='450px'
+                          height='250px'
+                        />
                     </div>
                     <div className={styles.holiday_card_body}>
                     <div className={styles.holiday_card_details}>
